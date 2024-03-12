@@ -1,0 +1,67 @@
+.font-9{
+    font-size: 9px;
+}
+
+.font-10{
+    font-size: 10px;
+}
+
+.font-13{
+    font-size: 13px;
+}
+
+.font-23{
+    font-size: 23px;
+}
+
+.font-30{
+    font-size: 30px;
+}
+
+#tableNominal{
+    height: 400px;
+    overflow: auto;
+}
+
+#tableNominal thead tr th {
+    position: sticky;
+    top: -1px;
+    z-index: 10;
+    background: #dbcaf4 !important;
+}
+
+#tableResum{
+    height: 150px;
+    overflow: auto;
+}
+
+#tableResum thead tr th {
+    position: sticky;
+    top: -1px;
+    z-index: 10;
+    background: #f6f6fb !important;
+}
+
+#circleDanger {
+    background: #ef5350;
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    margin-right: 5px;
+}
+
+#circleWarning{
+    background: #ffb22b;
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    margin-right: 5px;
+}
+
+#circleSuccess{
+    background: #198754;
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    margin-right: 5px;
+}
