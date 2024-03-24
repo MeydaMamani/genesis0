@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% load static  %}
+
+{% block title %}
+	Genesis - Redes
+{% endblock title %}
+
+{% block styles %}
+
+{% endblock styles %}
+
+{% block content %}
+
+<div id="appRedes">
+    <div class="page-title">
+        <div class="title_left">
+            <h4>Gestión de Redes</h4>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="row">
+        <template v-for="li in lists">
+            <div class="col-md-12" v-if="li.fields.level == '1'">
+                <div class="x_panel" style="background: rgb(175 221 224);">
+                    <h2 class="text-dark"> Región: [[ li.fields.name ]]</h2>
+                </div>
+            </div>
+            <template v-for="item in lists">
+                <template v-if="item.fields.level == '2'">
+                    <div class="col-md-4 mb-2" v-if="li.pk == item.fields.parent">
+                        <div class="accordion" id="accordion" role="tablist" aria-multiselectable="true">
+                            <div class="panel">
+                                <a class="panel-heading bg-info text-white" role="tab" id="headingOne" data-toggle="collapse" data-parent="#accordion" :href="'#A'+item.pk" aria-expanded="true" aria-controls="collapseOne">
+                                    <h6 class="panel-title m-0"><i class="fa fa-plus mr-2"></i> [[ item.fields.name ]]
+                                        <i @click="editRed(item, key)" data-toggle="modal" data-target="#modalRed" class="fa fa-pencil text-warning float-right"></i>
+                                    </h6>
+                                </a>
+                                <div :id="'A'+item.pk" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                                    <div class="panel-body">
+                                        <ul class="list-group">
+                                            <template v-for="data, key in lists">
+                                                <template v-if="data.fields.level == '3'">
+                                                    <!-- PARA DISTRITOS -->
+                                                    <div class="accordion" id="accordion" role="tablist" aria-multiselectable="true">
+                                                        <div class="panel" v-if="item.pk == data.fields.parent">
+                                                            <a class="panel-heading bg-secondary text-white" role="tab" id="headingOne" data-toggle="collapse" data-parent="#accordion" :href="'#B'+data.pk" aria-expanded="true" aria-controls="collapseOne">
+                                                                <h6 class="panel-title m-0"> <i class="fa fa-plus ml-3 mr-2"></i> [[ data.fields.name ]]
+                                                                    <i @click="editRed(data, key)" data-toggle="modal" data-target="#modalRed" class="fa fa-pencil text-warning float-right"></i>
+                                                                </h6>
+                                                            </a>
+                                                            <div :id="'B'+data.pk" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                                                                <div class="panel-body">
+                                                                    <ul class="list-group">
+                                                                        <template v-for="d, key in lists">
+                                                                            <template v-if="data.fields.level == '3'">
+                                                                                <li class="list-group-item" v-if="data.pk == d.fields.parent"> <label for="" class="mt-2">[[ d.fields.name ]]</label>
+                                                                                    <button @click="editRed(d, key)" type="button" class="btn btn-sm btn-outline-warning btn-round float-right" data-toggle="modal" data-target="#modalRed"><i class="fa fa-pencil"></i></button>
+                                                                                </li>
+                                                                            </template>
+                                                                        </template>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </template>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </template>
+        </template>
+    </div>
+    <!-- Modal para crear y actualizar departamentos-->
+    <div id="modalRed" class="modal fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <h5 class="modal-title ml-3 text-white" id="grid-title"><i class="fa fa-puzzle-piece"></i> Actualizar Red</h5>
+                </div>
+                <div class="modal-body">
+                    <form action="POST" id="formRed" class="needs-validation" @submit.prevent="updateRed" novalidate>
+                        {% csrf_token %}
+                        <input type="hidden" v-if="form.pk" v-model="form.pk" name="pk">
+                        <input type="hidden" v-if="form.fields.code" v-model="form.fields.code" name="code">
+                        <input type="hidden" v-if="form.fields.name" v-model="form.fields.name" name="name">
+                        <input type="hidden" v-if="form.fields.abbreviation" v-model="form.fields.abbreviation" name="abbreviation">
+                        <input type="hidden" v-if="form.fields.parent" v-model="form.fields.parent" name="parent">
+                        <input type="hidden" v-if="form.fields.level" v-model="form.fields.level" name="level">
+                        <input type="hidden" v-if="form.fields.type" v-model="form.fields.type" name="type">
+                        <div class="row">
+                            <div class="col-md-8 border-right">
+                                <div class="form-group row mb-0">
+                                    <b class="col-form-label text-secondary col-md-4 col-sm-4 ">Código:</b>
+                                    <div class="col-md-8 col-sm-8 col-form-label">[[ form.fields.code ]]</div>
+                                </div>
+                                <div class="form-group row mb-0">
+                                    <b class="col-form-label text-secondary col-md-4 col-sm-4 ">Nombre:</b>
+                                    <div class="col-md-8 col-sm-8 col-form-label">[[ form.fields.name ]]</div>
+                                </div>
+                                <div class="form-group row mb-0">
+                                    <b class="col-form-label text-secondary col-md-4 col-sm-4 ">Nivel:</b>
+                                    <div class="col-md-8 col-sm-8 col-form-label">[[ form.fields.level ]]</div>
+                                </div>
+                                <div class="form-group row mb-0">
+                                    <b class="col-form-label text-secondary col-md-4 col-sm-4 ">Tipo:</b>
+                                    <div class="col-md-8 col-sm-8 col-form-label">
+                                        <template v-if="form.fields.type == 'R'">REGIÓN</template>
+                                        <template v-if="form.fields.type == 'P'">PROVINICA</template>
+                                        <template v-if="form.fields.type == 'M'">MICRORED</template>
+                                        <template v-if="form.fields.type == 'D'">DISTRITO</template>
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-0">
+                                    <b class="col-form-label text-secondary col-md-4 col-sm-4 ">Pertenece?:</b>
+                                    <div class="col-md-8 col-sm-8 col-form-label">
+                                        <template v-for="item in lists">
+                                        <template v-if="form.fields.parent == item.pk">
+                                            [[ item.fields.name ]]
+                                        </template>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="text-megna"for="depid">Estado:</label>
+                                {{ form.state }}
+                                <div class="invalid-tooltip">
+                                    Seleccione Estado
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ln_solid"></div>
+                        <div class="text-right">
+                            <button class="btn btn-info btn-sm" type="submit" >Actualizar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script src="{% static 'js/vue/redes.js' %}"></script>
+
+{% endblock scripts %}
