@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static  %}
+
+{% block title %}
+	Fed - Paquete Niño
+{% endblock title %}
+
+{% block styles %}
+
+{% endblock styles %}
+
+{% block content %}
+
+<div id="appPackChild">
+    <div class="page-title">
+        <h6 class="mb-2">MC-02: Niñas y niños menores de 12 meses de edad, procedentes de los quintiles 1 y 2 de pobreza departamental que reciben el paquete integrado de servicios</h6>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-6 offset-md-3">
+        <div class="card" style="border: 3px solid #45489a; background: #d1eaf966; box-shadow: 10px 10px 10px #ccbebe;">
+            <img src="{% static 'img/ringed.png' %}" alt="" class="position-absolute w-100" style="z-index: 1; top: -30px;"><br><br>
+                <h3 class="text-center text-primary m-0">Paquete Niño</h3>
+                <div class="card-body">
+                    <form method="POST" @submit.prevent="PrintExcel" class="form-horizontal">
+                        <div class="form-group col-md-6">
+                            <label class="text-dark">Seleccione Tipo:</label>
+                            <select class="form-control" name="type" id="type" v-model="type" v-select2="''" aria-label="Default select example">
+                                <option value="advance">Avance</option>
+                                <option value="ial">Seg. Nominal IAL/IAR/ETR</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="text-dark">Seleccione Año:</label>
+                            <select class="form-control" name="year" id="year" v-model="year" v-select2="''" aria-label="Default select example">
+                                <option value="0">Seleccione año</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="text-dark">Seleccione Mes:</label>
+                            <select class="form-control" name="month" id="month" v-model="month" v-select2="''" aria-label="Default select example">
+                                <option value="0">Seleccione Mes</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12 text-center mt-2">
+                            <button class="btn btn-info btn-sm" type="submit"><i class="fa fa-download"></i> Descargar Excel</button>
+                        </div>
+                    </form>
+                    <div class="d-flex mt-4">
+                        <p class="text-dark text-start font-13 col-md-5 mb-0"><b>* Nota: </b> Avance Mensual Julio 2023 a la fecha.</p>
+                        <a class="btn btn-outline-success btn-sm" href="https://drive.google.com/uc?id=1-RvFQUfKMzfKDEjq4p-HHjxUud4dHkZa&export=download">IAL/Pqt</a>
+                        <a class="btn btn-outline-success btn-sm" href="https://drive.google.com/uc?id=1uXff_NsNeqP4AR3RUiyAKdKzilfq1vyl&export=download">Pqt Fed</a>
+                        <a class="btn btn-outline-primary btn-sm" href="https://drive.google.com/uc?id=10OMkPM1QbTCI0cb-VcJIIb78uERH5d5p&export=download"> Cred Mensual</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+
+<script src="{% static 'js/vue/packChild.js' %}"></script>
+
+{% endblock scripts %}

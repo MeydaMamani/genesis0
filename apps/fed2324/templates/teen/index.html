@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+{% load static  %}
+
+{% block title %}
+	Fed - Adolescentes
+{% endblock title %}
+
+{% block styles %}
+
+{% endblock styles %}
+
+{% block content %}
+
+<div id="appTeens">
+    <div class="page-title">
+        <h6 class="mb-2">SI-05: Adolescentes mujeres de 12 a 17 años de edad, con dosaje de hemoglobina, en IPRESS del primer nivel de atención de salud del Gobierno Regional - <span class="nameMonthYear text-dark"></span></h6>
+    </div>
+    <div class="clearfix"></div>
+    <div class="row">
+        <div class="col-md-5 pr-0">
+            <div class="row m-0">
+                <div class="x_panel col-md-4 p-1">
+                    <div class="text-center d-flex">
+                        <div class="col-md-5 mt-1 d-flex justify-content-center align-self-center">
+                            <i class="fa fa-users font-30 p-0 round"></i>
+                        </div>
+                        <div class="col-md-7 mt-1 font-23">
+                            <p class="text-secondary text-center font-13 font-weight-bold mb-0">Total</p>
+                            <label class="text-secondary m-0">[[ total ]]</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="x_panel col-md-4 p-1">
+                    <div class="text-center d-flex">
+                        <div class="col-md-5 mt-1 mb-1 d-flex justify-content-center align-self-center">
+                            <span class="glyphicon glyphicon-thumbs-up font-30 p-0 text-success"></span>
+                        </div>
+                        <div class="col-md-7 mt-1 font-23">
+                            <p class="card-title text-success text-center font-13 font-weight-bold mb-0">Cumplen</p>
+                            <label class="text-cumple text-success m-0"> [[ cumple ]]</label></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="x_panel col-md-4 p-0" id="all">
+                    <!-- <div id="info" class="d-flex justify-content-center align-items-center">
+                        <button @click="listNoCumplen" class="btn btn-sm btn-outline-light" style="z-index: 1;"><span class="mdi mdi-playlist-remove"></span> Listar</button>
+                    </div> -->
+                    <div class="text-center d-flex p-1">
+                        <div class="col-md-5 mt-2 d-flex justify-content-center align-self-center">
+                            <span class="glyphicon glyphicon-thumbs-down font-30 p-0 text-primary"></span>
+                        </div>
+                        <div class="col-md-7 mt-1 font-23 p-0">
+                            <p class="card-title text-primary text-center font-13 font-weight-bold mb-0">No Cumplen</p>
+                            <label class="text-nocumple text-primary m-0"> [[ nocumple  ]]</label></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row m-0">
+                <div class="x_panel">
+                    <form method="POST" @submit.prevent="searchTeen">
+                        {% csrf_token %}
+                        <div class="row mb-2">
+                            {% if request.user.id_red.type == 'R' %}
+                            <div class="col-sm-4 pr-0">
+                                <select class="form-control-sm w-100" name="red" id="red" v-select2="''" v-model="red" @change="listMcrRed">
+                                    <option value="TODOS">Seleccione Red</option>
+                                    {% for red in redes %}
+                                        <option value="{{ red.pk }}-{{ red.code }}">{{ red }}</option>
+                                    {% endfor %}
+                                    <option value="TODOS">TODOS</option>
+                                </select>
+                            </div>
+                            {% endif %}
+                            {% if request.user.id_red.type == 'P' %}
+                            <div class="col-sm-4 pr-0">
+                                <select class="form-control-sm w-100" name="red" id="red" v-select2="''" @change="listMcrRed">
+                                    <option value="{{ request.user.id_red.pk }}-{{ request.user.id_red.code }}">Seleccione Red</option>
+                                    <option value="{{ request.user.id_red.pk }}-{{ request.user.id_red.code }}">{{ request.user.id_red }}</option>
+                                </select>
+                            </div>
+                            {% endif %}
+                            {% if request.user.id_red.type == 'R' or request.user.id_red.type == 'P' %}
+                            <div class="col-md-4 pr-0">
+                                <select class="form-control-sm w-100" name="microred" id="microred" v-select2="''" v-model="microred" @change="listDistritos">
+                                    <option v-for="item in listMicroRed" :value="item.pk+'-'+item.code">[[ item.name ]]</option>
+                                    <option value="TODOS">TODOS</option>
+                                </select>
+                            </div>
+                            {% endif %}
+                            {% if request.user.id_red.type == 'M' %}
+                            <div class="col-md-4 pr-0">
+                                <input type="hidden" name="red" id="red" value="{{ request.user.id_red.parent }}">
+                                <select class="form-control-sm w-100" name="microred" id="microred" v-select2="''" @change="listDistritos">
+                                    <option value="{{ request.user.id_red.pk }}-{{ request.user.id_red.code }}">Seleccione MicroRed</option>
+                                    <option value="{{ request.user.id_red.pk }}-{{ request.user.id_red.code }}">{{ request.user.id_red }}</option>
+                                </select>
+                            </div>
+                            {% endif %}
+                            {% if request.user.id_red.type == 'R' or request.user.id_red.type == 'P' or request.user.id_red.type == 'M' %}
+                            <div class="col-md-4 pr-0">
+                                <select class="form-control-sm w-100" name="distrito" id="distrito" v-select2="''" v-model="distrito">
+                                    <option v-for="item in listDistricts" :value="item.code">[[ item.name ]]</option>
+                                    <option value="TODOS">TODOS</option>
+                                </select>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 pr-0">
+                                <select class="form-control-sm w-100" name="year" id="year" v-model="year" v-select2="''">
+                                </select>
+                            </div>
+                            <div class="col-md-4 pr-0">
+                                <select class="form-control-sm w-100" name="month" id="month" v-model="month" v-select2="''">
+                                </select>
+                            </div>
+                            <div class="col-md-4 mt-1">
+                                <button class="btn btn-info btn-block btn-sm ml-1 buscar" type="submit"><i class="fa fa-search"></i> Buscar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="x_panel p-2 text-center border border-secondary">
+                <h6 class="text-dark mt-1">Avance</h6>
+                <span class="chart" :data-percent="avan"><span class="percent"></span></span>
+            </div>
+        </div>
+        <div class="col-md-1 p-0 text-center">
+            <button type="button" @click="PrintExcel()" name="exportarCSV" class="btn btn-outline-success btn-sm mb-2"> Descargar</button>
+            <button type="button" class="btn btn-outline-danger btn-sm mb-2" data-toggle="modal" data-target=".ModalInformacion"><i class="mdi mdi-format-list-bulleted"></i> Ficha Téc.</button>
+            <button type="button" name="Limpiar" class="btn btn-outline-secondary btn-sm mb-2" onclick="location.href='index2.php';"><i class="mdi mdi-arrow-left-bold"></i> Regresar</button>
+            <button @click="searchTeen" class="btn btn-outline-primary btn-sm mb-2"><i class="mdi mdi-checkbox-multiple-blank"></i> Ver Todo</button>
+        </div>
+        <div class="col-md-4">
+            <div class="x_panel p-2">
+                <div class="table-responsive" id="tableResum">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr class="font-10 text-center" style="background: #e0eff5;">
+                                <th class="align-middle p-1">#</th>
+                                <th class="align-middle p-1">Distrito</th>
+                                <th class="align-middle p-1">Den</th>
+                                <th class="align-middle p-1">Num</th>
+                                <th class="align-middle p-1">%</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="text-center font-9" v-for="item, key in lists[1]">
+                                <td class="align-middle p-1">[[ key+1 ]]</td>
+                                <td class="align-middle text-left p-1">[[ item.distrito ]]</td>
+                                <td class="align-middle p-1">[[ item.denominador ]]</td>
+                                <td class="align-middle p-1">[[ item.numerador ]]</td>
+                                <td class="align-middle p-1 text-success d-flex" v-if="item.denominador == item.numerador"><div id="circleSuccess"></div>100 %</td>
+                                <td class="align-middle p-1 text-success d-flex" v-else-if="item.avance > 59"><div id="circleSuccess"></div>[[ parseFloat(item.avance).toFixed(1) ]] %</td>
+                                <td class="align-middle p-1 text-danger d-flex" v-else-if="item.avance <= 49"><div id="circleDanger"></div>[[ parseFloat(item.avance).toFixed(1) ]] %</td>
+                                <td class="align-middle p-1 text-warning d-flex" v-else-if="item.avance > 49 && item.avance <= 59"><div id="circleWarning"></div>[[ parseFloat(item.avance).toFixed(1) ]] %</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="x_panel p-2">
+                <div class="table-responsive nominalTable" id="tableNominal">
+                    <table id="demo-foo-addrow" class="table table-hover" data-page-size="20" data-limit-navigation="10">
+                        <thead>
+                            <tr class="font-10 text-center">
+                                <th class="align-middle p-1">#</th>
+                                <th class="align-middle p-1">Provincia</th>
+                                <th class="align-middle p-1">Distrito</th>
+                                <th class="align-middle p-1">Establecimiento</th>
+                                <th class="align-middle p-1">Documento</th>
+                                <th class="align-middle p-1">Fecha Atención</th>
+                                <th class="align-middle p-1" style="background: #F7C3FA !important;">Dosaje Hb</th>
+                                <th class="align-middle p-1">Mide</th>
+                            </tr>
+                        </thead>
+                        <div class="float-right col-md-3 p-0">
+                            <div class="col-md-12 col-sm-12 form-group has-feedback pr-0">
+                                <input id="demo-input-search" class="form-control has-feedback-left" type="search" placeholder="Buscar...">
+                                <span class="glyphicon glyphicon-search form-control-feedback left mt-1" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                        <tbody>
+                            <tr class="text-center font-10" v-for="item, key in lists[0]">
+                                <td class="align-middle p-0">[[ key+1 ]]</td>
+                                <td class="align-middle p-0">[[ item.fields.provincia ]]</td>
+                                <td class="align-middle p-0">[[ item.fields.distrito ]]</td>
+                                <td class="align-middle p-0">[[ item.fields.establecimiento ]]</td>
+                                <td class="align-middle p-0">[[ item.fields.documento ]]</td>
+                                <td class="align-middle p-0">[[ item.fields.fec_1erAte ]]</td>
+                                <td class="align-middle p-0">[[ item.fields.fec_hb ]]</td>
+                                <td class="align-middle p-0">
+                                    <template v-if="item.fields.num == '1'"><i class="fa fa-check text-success"></i></template>
+                                    <template v-else><i class="fa fa-remove text-danger"></i></template>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="8">
+                                    <div class="">
+                                        <ul class="pagination"></ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- MODAL INFORMACION-->
+    <div class="modal fade ModalInformacion" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <img src="{% static 'img/SI-05.png' %}" class="w-100">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+
+<script src="{% static 'js/vue/teens.js' %}"></script>
+<script src="{% static 'js/js/teens.js' %}"></script>
+
+{% endblock scripts %}
