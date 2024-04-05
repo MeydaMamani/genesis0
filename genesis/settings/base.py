@@ -5,7 +5,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = 'django-insecure-1=heoq-9gq2^gd(abi2&!gn#@&0gf)_q(&wj*=ipq@=ee(t4e&'
 
-# AUTH_USER_MODEL = 'person.User'
+AUTH_USER_MODEL = 'person.User'
 
 DJANGO_APPS = [
     'django.contrib.admin',
@@ -18,7 +18,11 @@ DJANGO_APPS = [
 ]
 
 LOCAL_APPS = [
-    'dashboard',
+    'apps.dashboard',
+    'apps.person',
+    'apps.redes',
+    'apps.fed2324',
+    'apps.boards',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS

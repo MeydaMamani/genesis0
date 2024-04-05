@@ -21,5 +21,9 @@ from django.urls import path, re_path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    re_path(r'^', include('dashboard.urls', namespace='dashboard')),
+    re_path(r'^', include('apps.dashboard.urls', namespace='dashboard')),
+    path('person/',include('apps.person.urls', namespace='person')),
+    path('redes/',include('apps.redes.urls', namespace='redes')),
+    path('fed2324/',include('apps.fed2324.urls', namespace='fed2324')),
+    path('boards/',include('apps.boards.urls', namespace='boards')),
 ]
