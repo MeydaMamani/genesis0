@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>{% block title %}GENESIS{% endblock title %}</title>
+    <link rel="icon" href='/static/img/favicon.png' type="image/x-icon">
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-progressbar-3.3.4.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/pnotify.css' %}">
+    <link rel="stylesheet" href="{% static 'css/select2.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sweetalert.css' %}">
+    <link rel="stylesheet" href="{% static 'css/footable.core.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style_footable.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    {% block styles %}
+    <style>
+        .ui-pnotify-title { font-size: 15px !important; }
+    </style>
+    {% endblock styles %}
+</head>
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 left_col">
+                <div class="left_col scroll-view">
+                <div class="navbar nav_title" style="border: 0;">
+                    <a href="#" class="site_title"><i class="fa fa-google"></i> <span>Genesis</span></a>
+                </div>
+
+                <div class="clearfix"></div>
+
+                <!-- menu profile quick info -->
+                <div class="profile clearfix">
+                    <div class="profile_pic">
+                        {% if request.user.id_person.sex == 'F' %}
+                            <img src="{% static 'img/nurse_.png' %}" alt="user" class="img-circle profile_img">
+                        {% else %}
+                            <img src="{% static 'img/doctor_.png' %}" alt="user" class="img-circle profile_img">
+                        {% endif %}
+                    </div>
+                    <div class="profile_info"> <span>Bienvenid@,</span><h2>{{ request.user.id_person.names }}</h2></div>
+                </div>
+                <!-- /menu profile quick info -->
+                <br />
+                <!-- sidebar menu -->
+                <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                    <div class="menu_section">
+                    <h3>{{ request.user.id_red.type }} - {{ request.user.id_red }}</h3>
+                    <ul class="nav side-menu">
+                        <li><a><i class="fa fa-bar-chart-o"></i> Tableros<span class="fa fa-chevron-down"></span></a>
+                            <ul class="nav child_menu">
+                                <li><a href="#">Tablero Paquete</a></li>
+                                <li><a href="#">Tablero Essalud</a></li>
+                                <li><a href="#">Tablero Coberturas</a></li>
+                                <li><a href="#">Tablero Ind. Gestión</a></li>
+                                <li><a href="#">Tablero Ind. Presupuestal</a></li>
+                                <li><a href="#">Tablero Desa</a></li>
+                                <li><a href="#">Tablero Padrón</a></li>
+                                <li><a href="#">Tablero Covid</a></li>
+                                <li><a href="#">Tablero Convenios</a></li>
+                            </ul>
+                        </li>
+                        <li><a><i class="fa fa-bar-chart-o"></i> Fed<span class="fa fa-chevron-down"></span></a>
+                            <ul class="nav child_menu">
+                                <li><a href="#">Niños 2023-2024 <span class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu">
+                                        <li><a href="#">Paquete Completo</a></li>
+                                        <li><a href="#">Pqt. Recién Nacido</a></li>
+                                        <li><a href="#">Prematuros</a></li>
+                                        <li><a href="#">Suple 4 Meses</a></li>
+                                        <li><a href="#">12M con 2 Dosajes</a></li>
+                                    </ul>
+                                </li>
+                                <li><a href="#">Adol. 2023-2024 <span class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu">
+                                        <li><a href="#">Mujeres 12 a 17 Hb</a></li>
+                                    </ul>
+                                </li>
+                                <li><a href="#">Gestantes 2023-2024 <span class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu">
+                                        <li><a href="#">Paquete Completo</a></li>
+                                        <li><a href="#">Primera Aten. Prenatal</a></li>
+                                        <li><a href="#">Gest. Dx Anemia Tto</a></li>
+                                        <li><a href="#">Sospecha Viol.</a></li>
+                                        <li><a href="#">Sosp. Viol. Ttto</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><a><i class="fa fa-bar-chart-o"></i> Seguimiento<span class="fa fa-chevron-down"></span></a>
+                            <ul class="nav child_menu">
+                                <li><a href="#">Detalle Paciente</a></li>
+                                <li><a href="#">Inmunizaciones</a>
+                                    <ul class="nav child_menu">
+                                        <li><a href="#">Coberturas</a></li>
+                                        <li><a href="#">Vacunas</a></li>
+                                    </ul>
+                                </li>
+                                <li><a href="#">Niños</a>
+                                    <ul class="nav child_menu">
+                                        <li><a href="#">Tamizaje</a></li>
+                                        <li><a href="#">Suple 4M y Visita</a></li>
+                                    </ul>
+                                </li>
+                                <li><a href="#">Anemia Niños</a></li>
+                                <li><a href="#">Salud Mental</a></li>
+                                <li><a href="#">Padrón Nominal</a></li>
+                                <li><a href="#">Metales Pesados</a></li>
+                                <li><a href="#">Desparacitación</a></li>
+                                <li><a href="#">Archivo Plano</a></li>
+                                <li><a href="#">Promsa</a></li>
+                                <li><a href="#">R40</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    </div>
+                </div>
+                <!-- /sidebar menu -->
+                <!-- /menu footer buttons -->
+                <div class="sidebar-footer hidden-small">
+                    <a data-toggle="tooltip" data-placement="top" title="Settings">
+                    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                    </a>
+                    <a data-toggle="tooltip" data-placement="top" title="FullScreen">
+                    <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+                    </a>
+                    <a data-toggle="tooltip" data-placement="top" title="Lock">
+                    <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+                    </a>
+                    <a data-toggle="tooltip" data-placement="top" title="Logout" href="login.html">
+                    <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+                    </a>
+                </div>
+                <!-- /menu footer buttons -->
+                </div>
+            </div>
+
+            <!-- top navigation -->
+            <div class="top_nav">
+                <div class="nav_menu">
+                    <div class="nav toggle">
+                        <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                    </div>
+                    <nav class="nav navbar-nav">
+                        <ul class="navbar-right">
+                            <li class="nav-item" style="padding-left: 15px;">
+                                <a href="{% url 'dashboard:logout' %}"><i class="fa fa-sign-out pull-right"></i> Cerrar Sesión</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+
+            <div class="right_col" role="main">
+                {% block content %}
+                {% endblock content %}
+            </div>
+            <!-- /page content -->
+
+            <!-- footer content -->
+            <footer>
+                <div class="pull-right"> Genesis V.2.0 </div>
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
+        </div>
+    </div>
+
+    <script src="{% static 'js/vue.js' %}"></script>
+    <script src="{% static 'js/axios.min.js' %}"></script>
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/select2.full.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/custom.min.js' %}"></script>
+    <script src="{% static 'js/Chart.min.js' %}"></script>
+    <script src="{% static 'js/date.js' %}"></script>
+    <script src="{% static 'js/bootstrap-progressbar.min.js' %}"></script>
+    <script src="{% static 'js/jquery.easypiechart.min.js' %}"></script>
+    <script src="{% static 'js/pnotify.js' %}"></script>
+    <script src="{% static 'js/sweetalert.min.js' %}"></script>
+    <script src="{% static 'js/gauge.min.js' %}"></script>
+    <script src="{% static 'js/footable.all.min.js' %}"></script>
+    <script src="{% static 'js/footable-init.js' %}"></script>
+    <script>
+        Vue.directive('select2', {
+            inserted: function (elem, fieldName) {
+                $(elem).select2();
+            },
+            componentUpdated:function(el, binding) {
+                Vue.nextTick(function () {
+                    let options = binding.value || {};
+                    // set up select2
+                    $(el).select2(Object.assign({}, {
+                    // Default options
+                    }, options))
+                    .on("select2:select select2:unselect", (e) => {
+                        el.dispatchEvent(new Event('change', { target: e.target }));
+                    });
+                });
+            },
+        });
+    </script>
+
+    {% block scripts %}
+    {% endblock scripts %}
+</body>
+</html>
