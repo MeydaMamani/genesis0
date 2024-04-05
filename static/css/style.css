@@ -10,6 +10,14 @@
     font-size: 13px;
 }
 
+.font-15{
+    font-size: 15px;
+}
+
+.font-20{
+    font-size: 20px;
+}
+
 .font-23{
     font-size: 23px;
 }
@@ -18,7 +26,11 @@
     font-size: 30px;
 }
 
-#tableNominal{
+.font-35{
+    font-size: 35px;
+}
+
+#tableNominal, #tableNominalNoCumple{
     height: 400px;
     overflow: auto;
 }
@@ -40,6 +52,13 @@
     top: -1px;
     z-index: 10;
     background: #f6f6fb !important;
+}
+
+#tableNominalNoCumple thead tr th {
+    position: sticky;
+    top: -1px;
+    z-index: 10;
+    background: #cc9595 !important;
 }
 
 #circleDanger {
@@ -65,3 +84,24 @@
     height: 15px;
     margin-right: 5px;
 }
+
+.footable>tfoot .pagination{
+    float: none;
+    justify-content: center !important;
+}
+
+div#info {
+    position: absolute;
+    overflow: hidden;
+    width: -webkit-fill-available;
+    height: 100%;
+    background-color: #5e5f99b0;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+div#all:hover div#info {
+    opacity: 1;
+    padding: 0px !important;
+}
+
