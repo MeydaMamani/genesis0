@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% load static  %}
+
+{% block title %}
+	Tablero Fed
+{% endblock title %}
+
+{% block styles %}
+
+{% endblock styles %}
+
+{% block content %}
+
+<div class="appFed">
+    <div class="row mt-2">
+        <h4 class="col-md-7 text-info">AVANCE INDICADORES FED 2023-2024,  <span class="name_mes"></span></h4>
+        <div class="col-md-4">
+            <form method="POST" class="row">
+                <div class="col-md-3">
+                    <select class="form-control-sm w-100" name="aniokids" id="aniokids">
+                        <option value="2023">2023</option>
+                        <option value="2024" selected>2024</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <select class="form-control-sm w-100" name="meskids" id="meskids">
+                        <option value="1">ENERO</option>
+                        <option value="2" selected>FEBRERO</option>
+                        <option value="3">MARZO</option>
+                        <option value="4">ABRIL</option>
+                        <option value="5">MAYO</option>
+                        <option value="6">JUNIO</option>
+                        <option value="7">JULIO</option>
+                        <option value="8">AGOSTO</option>
+                        <option value="9">SETIEMBRE</option>
+                        <option value="10">OCTUBRE</option>
+                        <option value="11">NOVIEMBRE</option>
+                        <option value="12">DICIEMBRE</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <select class="form-control-sm w-100" name="redkids" id="redkids">
+                        <option value="DANIEL ALCIDES CARRION">DANIEL A. CARRIÓN</option>
+                        <option value="PASCO">PASCO</option>
+                        <option value="OXAPAMPA">OXAPAMPA</option>
+                        <option value="TODOS" selected>TODOS</option>
+                    </select>
+                </div>
+                <div class="col-md-1 p-0">
+                    <button class="btn btn-primary btn-sm" type="submit"> <span class="glyphicon glyphicon-search"></span></button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-1 text-right">
+            <a title="Prevención de Anemia" href="https://anemia.ins.gob.pe/calculadora-completa"><img src="{% static 'img/ms.jpg' %}" alt="Imagen Usuario"></a>
+        </div>
+    </div>
+    <div class="row">
+        <a title="Indicadores Fed" class="m-2" href="https://drive.google.com/drive/u/1/folders/1AgYGABrafLI1H45ideuaWYJyCuzd1_C_"><span class="glyphicon glyphicon-check"></span><b>Indicadores Fed</b></a>
+        <a title="Indicadores Desp" class="m-2" href="https://drive.google.com/drive/folders/10WIG_KBTyyCK-5w1bIun_kEjLhA4NtWb?usp=sharing"><span class="glyphicon glyphicon-check"></span><b>Indicadores Desp</b></a>
+    </div>
+    <div class="row">
+        <div class="col-md-10">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #8064BB, #A787ED);">
+                        <h3 class="mt-0">0</h3>
+                        <p class="m-0 font-15">Total de Niños PN</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #4182C7, #63AFFF);">
+                        <h3 class="mt-0">0</h3>
+                        <p class="m-0 font-15">Cantidad de Nacidos</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right,#39464d,#6F828C);">
+                        <h3 class="mt-0">0</h3>
+                        <p class="m-0 font-15">Cant. Decesos</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #DA4885, #FF60A2);">
+                        <h3 class="mt-0">0</h3>
+                        <p class="m-0 font-15">Medicamentos</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="x_panel" style="border-color: #6e24af;">
+                        <h5 class="p-2 text-center m-0" style="color: #6e24af;">Indicador de Niños</h5>
+                        <div style="height: 270px; padding: 10px;" class="chartBarnino"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="x_panel" style="border-color: #b73373;">
+                        <h5 class="p-2 text-center m-0" style="color: #b73373;">Indicador de Adolescentes y Gestantes</h5>
+                        <div style="height: 270px; padding: 10px;" class="chartBargestante"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 ">
+            <div class="x_panel p-1">
+                <h5 class="p-1 text-center m-0" style="color: #656565;">Pqt. Niño</h5>
+                <div style="height: 132px;" class="chartnino"></div>
+            </div>
+            <div class="x_panel p-1">
+                <h5 class="p-1 text-center m-0" style="color: #656565;">Pqt. Gestante</h5>
+                <div style="height: 132px;" class="chartgestante"></div>
+            </div>
+        </div>
+    </div>
+    <!-- avance mensual niños -->
+    <div class="x_panel mb-3" style="border-color: #6e24af;">
+        <div class="row">
+            <h5 class="p-2 text-center col-md-8" style="color: #6e24af;">Avance Mensual Indicador de Niños 2023 - 2024</h5>
+            <div class="col-md-4 mt-1">
+                <form method="POST" class="row">
+                    <div class="col-md-5">
+                        <select class="form-control-sm w-100" name="red" id="red" onchange="cambia_distrito();" aria-label="Default select example">
+                            <option value="-" selected>Seleccione Red</option>
+                            <option value="1">DANIEL ALCIDES CARRION</option>
+                            <option value="2">OXAPAMPA</option>
+                            <option value="3">PASCO</option>
+                            <option value="4">TODOS</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <select class="form-control-sm w-100" name="distrito" id="distrito">
+                            <option value="-" selected>Seleccione Distrito</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary btn-sm" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div style="height: 350px; padding: 10px;" class="chartLine"></div>
+    </div>
+    <!-- avance mensual gestantes -->
+    <div class="x_panel mb-3" style="border-color: #b73373;">
+        <div class="row">
+            <h5 class="p-2 text-center col-md-8" style="color: #b73373;">Avance Mensual Indicador de Adoles. y Gestantes Niños 2023 - 2024</h5>
+            <div class="col-md-4 mt-1">
+                <form method="POST" class="row">
+                    <div class="col-md-5">
+                        <select class="form-control-sm w-100" name="red2" id="red2" onchange="cambia_distrito2();" aria-label="Default select example">
+                            <option value="-" selected>Seleccione Red</option>
+                            <option value="1">DANIEL ALCIDES CARRION</option>
+                            <option value="2">OXAPAMPA</option>
+                            <option value="3">PASCO</option>
+                            <option value="4">TODOS</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <select class="form-control-sm w-100" name="distrito2" id="distrito2">
+                            <option value="-" selected>Seleccione Distrito</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary btn-sm" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- <h5 class="p-2 text-center m-0" style="color: #b73373;">Avance Mensual Indicador de Adolescentes y Gestantes 2023 -2024</h5> -->
+        <div style="height: 350px; padding: 10px;" class="chartLineGest"></div>
+    </div>
+    <!-- AVANCE POR DISTRITO -->
+    <div class="x_panel mb-3" style="border-color: #33A6B8;">
+        <div class="row">
+            <h5 class="p-2 text-center m-0 col-md-12" style="color: #33A6B8;">Avance Indicador <span class="name_ind"></span></h5>
+            <div class="col-md-10 offset-md-1 pt-2">
+                <form method="post" class="row formDistInd" id="formDistInd">
+                    <div class="col-md-4">
+                        <select class="form-control-sm w-100" name="indicador" id="indicador">
+                            <option value="r_nacido" selected>Paq. Recién Nacido</option>
+                            <option value="prematuro">Prematuros Suplementados</option>
+                            <option value="meses4">Suplementación 4 Meses</option>
+                            <option value="dosajes2">2 Dosajes con Hb</option>
+                            <option value="adolescente">Adolescentes</option>
+                            <option value="1apn">Primera APN</option>
+                            <option value="dxAnemia">Dx Anemia con Tto</option>
+                            <option value="sospecha">Sosp. Violencia</option>
+                            <option value="sos_tto">Sosp. e Inicio Tto</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-control-sm w-100" name="provincia" id="provincia">
+                            <option value="DANIEL ALCIDES CARRION">DANIEL A. CARRIÓN</option>
+                            <option value="PASCO" selected>PASCO</option>
+                            <option value="OXAPAMPA">OXAPAMPA</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-control-sm w-100" name="anioInd" id="anioInd">
+                            <option value="2022">2022</option>
+                            <option value="2023" selected>2023</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-control-sm w-100" name="mesInd" id="mesInd">
+                            <option value="1">ENERO</option>
+                            <option value="2">FEBRERO</option>
+                            <option value="3">MARZO</option>
+                            <option value="4">ABRIL</option>
+                            <option value="5">MAYO</option>
+                            <option value="6">JUNIO</option>
+                            <option value="7">JULIO</option>
+                            <option value="8">AGOSTO</option>
+                            <option value="9">SETIEMBRE</option>
+                            <option value="10">OCTUBRE</option>
+                            <option value="11" selected>NOVIEMBRE</option>
+                            <option value="12">DICIEMBRE</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1 p-0">
+                        <button class="btn btn-primary btn-sm" type="submit"> <span class="glyphicon glyphicon-search"></span></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div style="height: 350px; padding: 10px;" class="chartLineXInd"></div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+
+<script src="{% static 'js/vue/packChild.js' %}"></script>
+
+{% endblock scripts %}

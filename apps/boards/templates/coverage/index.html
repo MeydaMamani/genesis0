@@ -1,0 +1,1147 @@
+{% extends "base.html" %}
+{% load static  %}
+
+{% block title %}
+	Tablero Coberturas
+{% endblock title %}
+
+{% block styles %}
+
+{% endblock styles %}
+
+{% block content %}
+
+<div id="appCoverage">
+    <div id="carouselExampleControls" class="carousel slide" data-ride="carousel" data-interval="false">
+        <div class="carousel-inner">
+            <!-- MENORES DE 1 AÑO -->
+            <div class="carousel-item active">
+                <div class="col-md-12">
+                    <div class="col-md-8 mt-2 offset-md-2">
+                        <div class="text-center mb-2">
+                            <b class="font-20" style="color: #6e24af;"> NIÑOS MENORES DE 1 AÑO - ENERO A <span class="nameMonthMenor1Anio"></span></b>
+                        </div>
+                        <div class="border border-primary mb-2 p-0 pt-1">
+                            <div class="d-flex mb-1">
+                                <div class="col-md-12">
+                                    <form method="GET" @submit.prevent="formRn" class="form-horizontal">
+                                        {% if request.user.id_red.type == 'R' %}
+                                        <div class="col-sm-4 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="red" id="red">
+                                                <option value="0">Seleccione Red</option>
+                                                {% for red in redes %}
+                                                    <option value="{{ red.pk }}-{{ red.code }}">{{ red }}</option>
+                                                {% endfor %}
+                                                <option value="4">TODOS</option>
+                                            </select>
+                                        </div>
+                                        {% else %}
+                                        <div class="col-md-2"></div>
+                                        {% endif %}
+                                        <div class="col-sm-3 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="sector" id="sector" aria-label="Default select example">
+                                                <option value="0" selected>Seleccione Sector</option>
+                                                <option value="GOBIERNO REGIONAL">GOBIERNO REGIONAL</option>
+                                                <option value="ESSALUD">ESSALUD</option>
+                                                <option value="TODOS">TODOS</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-3 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="mes" id="mes">
+                                                <option value="0" selected>Seleccione Mes</option>
+                                            </select>
+                                        </div>
+                                        <div class="justify-content-center col-md-2">
+                                            <button class="btn btn-primary btn-sm m-1" id="buscar_rn" type="submit"><i class="fa fa-search"></i></button>
+                                            <button type="button" class="btn btn-outline-success m-1 btn-sm"><i class="fa fa-print"></i></button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="text-center p-2">
+                            <h5 class="text-primary">Vacunación en Recién Nacido</h5>
+                        </div>
+                        <!-- TOTALES -->
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #1c518a, #4a89ca);">
+                                    <h3 class="mt-0">[[ listLess1year_cant.meta ]]</h3>
+                                    <p class="m-0 font-15">Meta</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #37B3DC, #70DBFF);">
+                                    <h3 class="mt-0">[[ listLess1year_cant.bcg ]]</h3>
+                                    <p class="m-0 font-15">Total BCG</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #37B3DC, #70DBFF);">
+                                    <h3 class="mt-0">[[ listLess1year_cant.hvb ]]</h3>
+                                    <p class="m-0 font-15">Total HVB</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- AVANCES -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="x_panel p-2 text-center">
+                                    <span class="chart" id="chartBcg" data-percent="0"><span class="percent"></span></span>
+                                    <h6 class="text-muted m-0">Avance BCG</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="x_panel p-2 text-center">
+                                    <span class="chart" id="chartHvb" data-percent="0"><span class="percent"></span></span>
+                                    <h6 class="text-muted m-0">Avance HVB</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- GRAFICA POR DISTRITOS -->
+                        <div class="x_panel border border-primary mt-2">
+                            <h6 class="p-1 mb-2 text-center text-primary">Avance Distrital</h6>
+                            <div class="x_content">
+                                <canvas id="mybarChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="text-center p-2">
+                            <h5 style="color: #6e24af;">Vacunación Completa</h5>
+                        </div>
+                        <!-- TOTALES -->
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #8064BB, #A787ED);">
+                                    <h3 class="mt-0">[[ listLess1year_cant.apo3 ]]</h3>
+                                    <p class="m-0 font-15">Total 3° Ipv</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #8064BB, #A787ED);">
+                                    <h3 class="mt-0">[[ listLess1year_cant.penta3 ]]</h3>
+                                    <p class="m-0 font-15">Total 3° Penta</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #8064BB, #A787ED);">
+                                    <h3 class="mt-0">[[ listLess1year_cant.rota2 ]]</h3>
+                                    <p class="m-0 font-15">Total 2° Rota</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #8064BB, #A787ED);">
+                                    <h3 class="mt-0">[[ listLess1year_cant.neumo2 ]]</h3>
+                                    <p class="m-0 font-15">Total 2° Neumo</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- AVANCES -->
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="x_panel p-2 text-center">
+                                    <span class="chart" id="chartApo" data-percent="0"><span class="percent"></span></span>
+                                    <h6 class="text-muted m-0">Avance Apo</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="x_panel p-2 text-center">
+                                    <span class="chart" id="chartPenta" data-percent="0"><span class="percent"></span></span>
+                                    <h6 class="text-muted m-0">Avance Penta</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="x_panel p-2 text-center">
+                                    <span class="chart" id="chartRota" data-percent="0"><span class="percent"></span></span>
+                                    <h6 class="text-muted m-0">Avance Rota</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="x_panel p-2 text-center">
+                                    <span class="chart" id="chartNeumo" data-percent="0"><span class="percent"></span></span>
+                                    <h6 class="text-muted m-0">Avance Neumo</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- GRAFICA POR DISTRITOS -->
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <div class="x_panel" style="border-color: #6e24af;">
+                                    <h6 class="p-1 mb-2 text-center" style="color: #6e24af;">Avance Distrital</h6>
+                                    <div class="charDistApoPenta" style="height: 400px; padding: 0px 15px 10px 10px;"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="x_panel" style="border-color: #6e24af;">
+                                    <h6 class="p-1 mb-2 text-center" style="color: #6e24af;">Avance Distrital</h6>
+                                    <div class="charDistRotaNeumo" style="height: 400px; padding: 0px 15px 10px 10px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- NIÑOS DE 1 AÑO -->
+            <div class="carousel-item">
+                <div class="col-md-12">
+                    <div class="col-md-8 mt-2 offset-md-2">
+                        <div class="text-center mb-2">
+                            <b class="font-20" style="color: #942a56;"> NIÑOS DE 1 AÑO - ENERO A <span class="nameMonth1Anio"></span></b>
+                        </div>
+                        <div class="border border-primary mb-4 p-0 pt-1">
+                            <div class="d-flex mb-1">
+                                <div class="col-md-12">
+                                    <form method="POST" @submit.prevent="PrintExcel" class="form-horizontal">
+                                        {% if request.user.id_red.type == 'R' %}
+                                        <div class="col-sm-4 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="red1" id="red1" aria-label="Default select example">
+                                                <option value="0" selected>Seleccione Red</option>
+                                                <option value="1">DANIEL ALCIDES CARRION</option>
+                                                <option value="2">OXAPAMPA</option>
+                                                <option value="3">PASCO</option>
+                                                <option value="4">TODOS</option>
+                                            </select>
+                                        </div>
+                                        {% else %}
+                                        <div class="col-md-2"></div>
+                                        {% endif %}
+                                        <div class="col-sm-3 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="sector1" id="sector1" aria-label="Default select example">
+                                                <option value="0" selected>Seleccione Sector</option>
+                                                <option value="GOBIERNO REGIONAL">GOBIERNO REGIONAL</option>
+                                                <option value="ESSALUD">ESSALUD</option>
+                                                <option value="TODOS">TODOS</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-3 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="mes1" id="mes1" aria-label="Default select example">
+                                                <option value="0" selected>Seleccione Mes</option>
+                                                <option value="1">ENERO</option>
+                                                <option value="2">FEBRERO</option>
+                                                <option value="3">MARZO</option>
+                                                <option value="4">ABRIL</option>
+                                                <option value="5">MAYO</option>
+                                                <option value="6">JUNIO</option>
+                                                <option value="7">JULIO</option>
+                                                <option value="8">AGOSTO</option>
+                                                <option value="9">SETIEMBRE</option>
+                                                <option value="10">OCTUBRE</option>
+                                                <option value="11">NOVIEMBRE</option>
+                                                <option value="12">DICIEMBRE</option>
+                                            </select>
+                                        </div>
+                                        <div class="justify-content-center col-md-2">
+                                            <button class="btn btn-primary btn-sm m-1" id="searchDni" type="submit" onclick="search();"><i class="fa fa-search"></i></button>
+                                            <button type="button" class="btn btn-outline-success m-1 btn-sm"><i class="fa fa-print"></i></button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #37167d, #8768cb);">
+                                    <h3 class="mt-0">0</h3>
+                                    <p class="m-0 font-15">Meta</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #37167d, #8768cb);">
+                                    <h3 class="mt-0">0</h3>
+                                    <p class="m-0 font-15">Total SPR1</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #37167d, #8768cb);">
+                                    <h3 class="mt-0">0</h3>
+                                    <p class="m-0 font-15">Total Neumo</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #37167d, #8768cb);">
+                                    <h3 class="mt-0">0</h3>
+                                    <p class="m-0 font-15">Total Varicela</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #37167d, #8768cb);">
+                                    <h3 class="mt-0">0</h3>
+                                    <p class="m-0 font-15">Total AMA</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #37167d, #8768cb);">
+                                    <h3 class="mt-0">0</h3>
+                                    <p class="m-0 font-15">Total SPR2</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #37167d, #8768cb);">
+                                    <h3 class="mt-0">0</h3>
+                                    <p class="m-0 font-15">Total RefDPT</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #37167d, #8768cb);">
+                                    <h3 class="mt-0">0</h3>
+                                    <p class="m-0 font-15">Total Ref Apo</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="x_panel p-2 text-center">
+                                    <span class="chart" data-percent="17.1"><span class="percent"></span></span>
+                                    <h6 class="text-muted m-0">Avance SPR1</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="x_panel p-2 text-center">
+                                    <span class="chart" data-percent="17.1"><span class="percent"></span></span>
+                                    <h6 class="text-muted m-0">Avance Neumo</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="x_panel p-2 text-center">
+                                    <span class="chart" data-percent="17.1"><span class="percent"></span></span>
+                                    <h6 class="text-muted m-0">Avance Varicela</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="x_panel p-2 text-center">
+                                    <span class="chart" data-percent="17.1"><span class="percent"></span></span>
+                                    <h6 class="text-muted m-0">Avance AMA</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="x_panel p-2 text-center">
+                                    <span class="chart" data-percent="17.1"><span class="percent"></span></span>
+                                    <h6 class="text-muted m-0">Avance SPR2</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="x_panel p-2 text-center">
+                                    <span class="chart" data-percent="17.1"><span class="percent"></span></span>
+                                    <h6 class="text-muted m-0">Avance RefDPT</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="x_panel p-2 text-center">
+                                    <span class="chart" data-percent="130.1"><span class="percent"></span></span>
+                                    <h6 class="text-muted m-0">Avance Ref Apo</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <!-- GRAFICA POR DISTRITOS -->
+                    <div class="col-md-4">
+                        <div class="x_panel border border-secondary">
+                            <h6 class="p-1 mb-2 text-center text-secondary">Avance Distrital</h6>
+                            <div class="charDistSpr1NNeumo3" style="height: 400px; padding: 0px 15px 10px 10px;"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="x_panel border border-secondary">
+                            <h6 class="p-1 mb-2 text-center text-secondary">Avance Distrital</h6>
+                            <div class="charDistVaricelaAma" style="height: 400px; padding: 0px 15px 10px 10px;"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="x_panel border border-secondary">
+                            <h6 class="p-1 mb-2 text-center text-secondary">Avance Distrital</h6>
+                            <div class="charDistSpr2DptApo" style="height: 400px; padding: 0px 15px 10px 10px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- NIÑOS DE 2 A 3 AÑOS -->
+            <div class="carousel-item">
+                <div class="col-md-12">
+                    <div class="col-md-8 mt-2 offset-md-2">
+                        <div class="text-center mb-2">
+                            <b class="font-20 text-success"> NIÑOS DE 2 Y 3 AÑOS - ENERO A <span class="nameMonth1Anio"></span></b>
+                        </div>
+                        <div class="border border-primary mb-2 pt-1">
+                            <div class="d-flex mb-1">
+                                <div class="col-md-12">
+                                    <form method="POST" @submit.prevent="PrintExcel" class="form-horizontal">
+                                        {% if request.user.id_red.type == 'R' %}
+                                        <div class="col-sm-4 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="red1" id="red1" aria-label="Default select example">
+                                                <option value="0" selected>Seleccione Red</option>
+                                                <option value="1">DANIEL ALCIDES CARRION</option>
+                                                <option value="2">OXAPAMPA</option>
+                                                <option value="3">PASCO</option>
+                                                <option value="4">TODOS</option>
+                                            </select>
+                                        </div>
+                                        {% else %}
+                                        <div class="col-md-2"></div>
+                                        {% endif %}
+                                        <div class="col-sm-3 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="sector1" id="sector1" aria-label="Default select example">
+                                                <option value="0" selected>Seleccione Sector</option>
+                                                <option value="GOBIERNO REGIONAL">GOBIERNO REGIONAL</option>
+                                                <option value="ESSALUD">ESSALUD</option>
+                                                <option value="TODOS">TODOS</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-3 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="mes1" id="mes1" aria-label="Default select example">
+                                                <option value="0" selected>Seleccione Mes</option>
+                                                <option value="1">ENERO</option>
+                                                <option value="2">FEBRERO</option>
+                                                <option value="3">MARZO</option>
+                                                <option value="4">ABRIL</option>
+                                                <option value="5">MAYO</option>
+                                                <option value="6">JUNIO</option>
+                                                <option value="7">JULIO</option>
+                                                <option value="8">AGOSTO</option>
+                                                <option value="9">SETIEMBRE</option>
+                                                <option value="10">OCTUBRE</option>
+                                                <option value="11">NOVIEMBRE</option>
+                                                <option value="12">DICIEMBRE</option>
+                                            </select>
+                                        </div>
+                                        <div class="justify-content-center col-md-2">
+                                            <button class="btn btn-primary btn-sm m-1" id="searchDni" type="submit" onclick="search();"><i class="fa fa-search"></i></button>
+                                            <button type="button" class="btn btn-outline-success m-1 btn-sm"><i class="fa fa-print"></i></button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="col-md-12 text-center p-2">
+                            <h5 class="text-success">2 Años</h5>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right,#4AC3AB,#5DF1D4);">
+                                    <h3 class="mt-0">0</h3>
+                                    <p class="m-0 font-15">Meta</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right,#4AC3AB,#5DF1D4);">
+                                    <h3 class="mt-0">0</h3>
+                                    <p class="m-0 font-15">Total</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="x_panel p-2 text-center">
+                                    <span class="chart" data-percent="3.8"><span class="percent"></span></span>
+                                    <h6 class="text-muted m-0">Avance BCG</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="x_panel border border-success">
+                            <h6 class="p-1 mb-2 text-center text-success">Avance Distrital</h6>
+                            <div class="charDistInf2A" style="height: 400px; padding: 0px 15px 10px 10px;"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="col-md-12 text-center p-2">
+                            <h5 class="text-dark">3 Años</h5>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right,#39464d,#6F828C);">
+                                    <h3 class="mt-0">0</h3>
+                                    <p class="m-0 font-15">Meta</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right,#39464d,#6F828C);">
+                                    <h3 class="mt-0">0</h3>
+                                    <p class="m-0 font-15">Total</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="x_panel p-2 text-center">
+                                    <span class="chart" data-percent="3.8"><span class="percent"></span></span>
+                                    <h6 class="text-muted m-0">Avance BCG</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="x_panel border border-dark">
+                            <h6 class="p-1 mb-2 text-center text-dark">Avance Distrital</h6>
+                            <div class="charDistInf2A" style="height: 400px; padding: 0px 15px 10px 10px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- NIÑOS DE 4 AÑOS -->
+            <div class="carousel-item">
+                <div class="col-md-12">
+                    <div class="col-md-8 mt-2 offset-md-2">
+                        <div class="text-center mb-2">
+                            <b class="font-20" style="color: #1a3da6;"> NIÑOS DE 4 AÑOS - ENERO A <span class="nameMonth1Anio"></span></b>
+                        </div>
+                        <div class="border border-primary mb-4 pt-1">
+                            <div class="d-flex mb-1">
+                                <div class="col-md-12">
+                                    <form method="POST" @submit.prevent="PrintExcel" class="form-horizontal">
+                                        {% if request.user.id_red.type == 'R' %}
+                                        <div class="col-sm-4 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="red1" id="red1" aria-label="Default select example">
+                                                <option value="0" selected>Seleccione Red</option>
+                                                <option value="1">DANIEL ALCIDES CARRION</option>
+                                                <option value="2">OXAPAMPA</option>
+                                                <option value="3">PASCO</option>
+                                                <option value="4">TODOS</option>
+                                            </select>
+                                        </div>
+                                        {% else %}
+                                        <div class="col-md-2"></div>
+                                        {% endif %}
+                                        <div class="col-sm-3 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="sector1" id="sector1" aria-label="Default select example">
+                                                <option value="0" selected>Seleccione Sector</option>
+                                                <option value="GOBIERNO REGIONAL">GOBIERNO REGIONAL</option>
+                                                <option value="ESSALUD">ESSALUD</option>
+                                                <option value="TODOS">TODOS</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-3 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="mes1" id="mes1" aria-label="Default select example">
+                                                <option value="0" selected>Seleccione Mes</option>
+                                                <option value="1">ENERO</option>
+                                                <option value="2">FEBRERO</option>
+                                                <option value="3">MARZO</option>
+                                                <option value="4">ABRIL</option>
+                                                <option value="5">MAYO</option>
+                                                <option value="6">JUNIO</option>
+                                                <option value="7">JULIO</option>
+                                                <option value="8">AGOSTO</option>
+                                                <option value="9">SETIEMBRE</option>
+                                                <option value="10">OCTUBRE</option>
+                                                <option value="11">NOVIEMBRE</option>
+                                                <option value="12">DICIEMBRE</option>
+                                            </select>
+                                        </div>
+                                        <div class="justify-content-center col-md-2">
+                                            <button class="btn btn-primary btn-sm m-1" id="searchDni" type="submit" onclick="search();"><i class="fa fa-search"></i></button>
+                                            <button type="button" class="btn btn-outline-success m-1 btn-sm"><i class="fa fa-print"></i></button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5 p-0">
+                        <div class="col-md-4">
+                            <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #14385d, #457ebb);">
+                                <h3 class="mt-0">0</h3>
+                                <p class="m-0 font-15">Meta</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #4182C7, #63AFFF);">
+                                <h3 class="mt-0">0</h3>
+                                <p class="m-0 font-15">Total 2° DPT</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="x_panel p-2 text-center">
+                                <span class="chart" data-percent="3.8"><span class="percent"></span></span>
+                                <h6 class="text-muted m-0">2do DPT</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-7 p-0">
+                        <div class="col-md-3">
+                            <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #4182C7, #63AFFF);">
+                                <h3 class="mt-0">0</h3>
+                                <p class="m-0 font-15">Total 2° APO</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="x_panel p-2 text-center">
+                                <span class="chart" data-percent="3.8"><span class="percent"></span></span>
+                                <h6 class="text-muted m-0">2° DPT</h6>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #4182C7, #63AFFF);">
+                                <h3 class="mt-0">0</h3>
+                                <p class="m-0 font-15">Total Influenza</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="x_panel p-2 text-center">
+                                <span class="chart" data-percent="3.8"><span class="percent"></span></span>
+                                <h6 class="text-muted m-0">Influenza</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- GRAFICA POR DISTRITOS -->
+                <div class="row mt-2">
+                    <div class="col-md-4">
+                        <div class="x_panel border border-primary">
+                            <h6 class="p-1 mb-2 text-center text-primary">Avance Distrital</h6>
+                            <div class="charDistDpt2" style="height: 350px; padding: 0px 15px 10px 10px;"></div>
+                        </div><br>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="x_panel border border-primary">
+                            <h6 class="p-1 mb-2 text-center text-primary">Avance Distrital</h6>
+                            <div class="charDistApo2" style="height: 350px; padding: 0px 15px 10px 10px;"></div>
+                        </div><br>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="x_panel border border-primary">
+                            <h6 class="p-1 mb-2 text-center text-primary">Avance Distrital</h6>
+                            <div class="charDistInfl4" style="height: 350px; padding: 0px 15px 10px 10px;"></div>
+                        </div><br>
+                    </div>
+                </div>
+            </div>
+            <!-- 9 A 13 AÑOS -->
+            <div class="carousel-item">
+                <div class="col-md-12">
+                    <div class="col-md-8 mt-2 offset-md-2">
+                        <div class="text-center mb-2">
+                            <b class="font-20" style="color: #942a56;"> NIÑOS Y NIÑAS DE 9 A 13 AÑOS - ENERO A <span class="nameMonth1Anio"></span></b>
+                        </div>
+                        <div class="border border-primary mb-4 pt-1">
+                            <div class="d-flex mb-1">
+                                <div class="col-md-12">
+                                    <form method="POST" @submit.prevent="PrintExcel" class="form-horizontal">
+                                        {% if request.user.id_red.type == 'R' %}
+                                        <div class="col-sm-4 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="red1" id="red1" aria-label="Default select example">
+                                                <option value="0" selected>Seleccione Red</option>
+                                                <option value="1">DANIEL ALCIDES CARRION</option>
+                                                <option value="2">OXAPAMPA</option>
+                                                <option value="3">PASCO</option>
+                                                <option value="4">TODOS</option>
+                                            </select>
+                                        </div>
+                                        {% else %}
+                                        <div class="col-md-2"></div>
+                                        {% endif %}
+                                        <div class="col-sm-3 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="sector1" id="sector1" aria-label="Default select example">
+                                                <option value="0" selected>Seleccione Sector</option>
+                                                <option value="GOBIERNO REGIONAL">GOBIERNO REGIONAL</option>
+                                                <option value="ESSALUD">ESSALUD</option>
+                                                <option value="TODOS">TODOS</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-3 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="mes1" id="mes1" aria-label="Default select example">
+                                                <option value="0" selected>Seleccione Mes</option>
+                                                <option value="1">ENERO</option>
+                                                <option value="2">FEBRERO</option>
+                                                <option value="3">MARZO</option>
+                                                <option value="4">ABRIL</option>
+                                                <option value="5">MAYO</option>
+                                                <option value="6">JUNIO</option>
+                                                <option value="7">JULIO</option>
+                                                <option value="8">AGOSTO</option>
+                                                <option value="9">SETIEMBRE</option>
+                                                <option value="10">OCTUBRE</option>
+                                                <option value="11">NOVIEMBRE</option>
+                                                <option value="12">DICIEMBRE</option>
+                                            </select>
+                                        </div>
+                                        <div class="justify-content-center col-md-2">
+                                            <button class="btn btn-primary btn-sm m-1" id="searchDni" type="submit" onclick="search();"><i class="fa fa-search"></i></button>
+                                            <button type="button" class="btn btn-outline-success m-1 btn-sm"><i class="fa fa-print"></i></button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 p-0">
+                        <div class="col-md-4">
+                            <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #DA4885, #FF60A2);">
+                                <h3 class="mt-0">0</h3>
+                                <p class="m-0 font-15">Meta Niñas</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #DA4885, #FF60A2);">
+                                <h3 class="mt-0">0</h3>
+                                <p class="m-0 font-15">Total VPH</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="x_panel p-2 text-center">
+                                <span class="chart" data-percent="3.8"><span class="percent"></span></span>
+                                <h6 class="text-muted m-0">Avance VPH</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 p-0">
+                        <div class="col-md-4">
+                            <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #1c518a, #4a89ca);">
+                                <h3 class="mt-0">0</h3>
+                                <p class="m-0 font-15">Meta Niñas</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #1c518a, #4a89ca);">
+                                <h3 class="mt-0">0</h3>
+                                <p class="m-0 font-15">Total VPH</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="x_panel p-2 text-center">
+                                <span class="chart" data-percent="3.8"><span class="percent"></span></span>
+                                <h6 class="text-muted m-0">Avance VPH</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-6">
+                        <div class="x_panel border border-danger">
+                            <h6 class="p-1 mb-2 text-center text-danger">Avance Distrital</h6>
+                            <div class="charDistNinias" style="height: 400px; padding: 0px 15px 10px 10px;"></div>
+                        </div><br>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="x_panel border border-primary">
+                            <h6 class="p-1 mb-2 text-center text-primary">Avance Distrital</h6>
+                            <div class="charDistNinios" style="height: 400px; padding: 0px 15px 10px 10px;"></div>
+                        </div><br>
+                    </div>
+                </div>
+            </div>
+            <!-- GESTANTES -->
+            <div class="carousel-item">
+                <div class="col-md-12">
+                    <div class="col-md-8 mt-2 offset-md-2">
+                        <div class="text-center mb-2">
+                            <b class="font-20" style="color: #3f0d6c;"> VACUNACIÓN EN GESTANTES - ENERO A <span class="nameMonthPregnant"></span></b>
+                        </div>
+                        <div class="border border-primary mb-4 pt-1">
+                            <div class="d-flex mb-1">
+                                <div class="col-md-12">
+                                    <form method="POST" @submit.prevent="PrintExcel" class="form-horizontal">
+                                        {% if request.user.id_red.type == 'R' %}
+                                        <div class="col-sm-4 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="red1" id="red1" aria-label="Default select example">
+                                                <option value="0" selected>Seleccione Red</option>
+                                                <option value="1">DANIEL ALCIDES CARRION</option>
+                                                <option value="2">OXAPAMPA</option>
+                                                <option value="3">PASCO</option>
+                                                <option value="4">TODOS</option>
+                                            </select>
+                                        </div>
+                                        {% else %}
+                                        <div class="col-md-2"></div>
+                                        {% endif %}
+                                        <div class="col-sm-3 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="sector1" id="sector1" aria-label="Default select example">
+                                                <option value="0" selected>Seleccione Sector</option>
+                                                <option value="GOBIERNO REGIONAL">GOBIERNO REGIONAL</option>
+                                                <option value="ESSALUD">ESSALUD</option>
+                                                <option value="TODOS">TODOS</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-3 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="mes1" id="mes1" aria-label="Default select example">
+                                                <option value="0" selected>Seleccione Mes</option>
+                                                <option value="1">ENERO</option>
+                                                <option value="2">FEBRERO</option>
+                                                <option value="3">MARZO</option>
+                                                <option value="4">ABRIL</option>
+                                                <option value="5">MAYO</option>
+                                                <option value="6">JUNIO</option>
+                                                <option value="7">JULIO</option>
+                                                <option value="8">AGOSTO</option>
+                                                <option value="9">SETIEMBRE</option>
+                                                <option value="10">OCTUBRE</option>
+                                                <option value="11">NOVIEMBRE</option>
+                                                <option value="12">DICIEMBRE</option>
+                                            </select>
+                                        </div>
+                                        <div class="justify-content-center col-md-2">
+                                            <button class="btn btn-primary btn-sm m-1" id="searchDni" type="submit" onclick="search();"><i class="fa fa-search"></i></button>
+                                            <button type="button" class="btn btn-outline-success m-1 btn-sm"><i class="fa fa-print"></i></button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="offset-md-2">
+                    <div class="row">
+                        <div class="col-md-4 p-0">
+                            <div class="col-md-6">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right,#b58af6,#c09ff1);">
+                                    <h3 class="mt-0">0</h3>
+                                    <p class="m-0 font-15">Meta</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right,#b58af6,#c09ff1);">
+                                    <h3 class="mt-0">0</h3>
+                                    <p class="m-0 font-15">Total DTAP</p>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="x_panel p-2 text-center">
+                                    <span class="chart" data-percent="3.8"><span class="percent"></span></span>
+                                    <h6 class="text-muted m-0">Avance VPH</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 p-0">
+                            <div class="x_panel" style="border-color: #6e24af;">
+                                <h6 class="p-1 mb-2 text-center" style="color: #6e24af;">Avance Distrital</h6>
+                                <div class="charDistGestante" style="height: 400px; padding: 0px 15px 10px 10px;"></div>
+                            </div><br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ADULTOS MAYORES -->
+            <div class="carousel-item">
+                <div class="col-md-12">
+                    <div class="col-md-8 mt-2 offset-md-2">
+                        <div class="text-center mb-2">
+                            <b class="font-20" style="color: #96612a;"> ADULTOS MAYORES - ENERO A <span class="nameMonthAdults"></span></b>
+                        </div>
+                        <div class="border border-primary mb-4 pt-1">
+                            <div class="d-flex mb-1">
+                                <div class="col-md-12">
+                                    <form method="POST" @submit.prevent="PrintExcel" class="form-horizontal">
+                                        {% if request.user.id_red.type == 'R' %}
+                                        <div class="col-sm-4 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="red1" id="red1" aria-label="Default select example">
+                                                <option value="0" selected>Seleccione Red</option>
+                                                <option value="1">DANIEL ALCIDES CARRION</option>
+                                                <option value="2">OXAPAMPA</option>
+                                                <option value="3">PASCO</option>
+                                                <option value="4">TODOS</option>
+                                            </select>
+                                        </div>
+                                        {% else %}
+                                        <div class="col-md-2"></div>
+                                        {% endif %}
+                                        <div class="col-sm-3 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="sector1" id="sector1" aria-label="Default select example">
+                                                <option value="0" selected>Seleccione Sector</option>
+                                                <option value="GOBIERNO REGIONAL">GOBIERNO REGIONAL</option>
+                                                <option value="ESSALUD">ESSALUD</option>
+                                                <option value="TODOS">TODOS</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-3 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="mes1" id="mes1" aria-label="Default select example">
+                                                <option value="0" selected>Seleccione Mes</option>
+                                                <option value="1">ENERO</option>
+                                                <option value="2">FEBRERO</option>
+                                                <option value="3">MARZO</option>
+                                                <option value="4">ABRIL</option>
+                                                <option value="5">MAYO</option>
+                                                <option value="6">JUNIO</option>
+                                                <option value="7">JULIO</option>
+                                                <option value="8">AGOSTO</option>
+                                                <option value="9">SETIEMBRE</option>
+                                                <option value="10">OCTUBRE</option>
+                                                <option value="11">NOVIEMBRE</option>
+                                                <option value="12">DICIEMBRE</option>
+                                            </select>
+                                        </div>
+                                        <div class="justify-content-center col-md-2">
+                                            <button class="btn btn-primary btn-sm m-1" id="searchDni" type="submit" onclick="search();"><i class="fa fa-search"></i></button>
+                                            <button type="button" class="btn btn-outline-success m-1 btn-sm"><i class="fa fa-print"></i></button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 p-0">
+                        <div class="col-md-4">
+                            <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right,#a66b2f,#c39e79);">
+                                <h3 class="mt-0">0</h3>
+                                <p class="m-0 font-15">Meta</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right,#a66b2f,#c39e79);">
+                                <h3 class="mt-0">0</h3>
+                                <p class="m-0 font-15">Total Infl.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="x_panel p-2 text-center">
+                                <span class="chart" data-percent="3.8"><span class="percent"></span></span>
+                                <h6 class="text-muted m-0">Avance Infl.</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 p-0">
+                        <div class="col-md-4">
+                            <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(45deg,#F1AB48,#FFD88E);">
+                                <h3 class="mt-0">0</h3>
+                                <p class="m-0 font-15">Meta</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(45deg,#F1AB48,#FFD88E);">
+                                <h3 class="mt-0">0</h3>
+                                <p class="m-0 font-15">Total Infl.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="x_panel p-2 text-center">
+                                <span class="chart" data-percent="3.8"><span class="percent"></span></span>
+                                <h6 class="text-muted m-0">Avance Infl.</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-6">
+                        <div class="x_panel" style="border-color: #bb8a57;">
+                            <h6 class="p-1 mb-2 text-center" style="color: #bb8a57;">Avance Distrital</h6>
+                            <div class="charDistInfAdult" style="height: 400px; padding: 0px 15px 10px 10px;"></div>
+                        </div><br>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="x_panel border border-warning">
+                            <h6 class="p-1 mb-2 text-center text-warning">Avance Distrital</h6>
+                            <div class="charDistNeumoAdult" style="height: 400px; padding: 0px 15px 10px 10px;"></div>
+                        </div><br>
+                    </div>
+                </div>
+            </div>
+            <!-- HEPATITIS -->
+            <div class="carousel-item">
+                <div class="col-md-12">
+                    <div class="col-md-8 mt-2 offset-md-2">
+                        <div class="text-center mb-2">
+                            <b class="font-20 text-danger"> HEPATITIS A EN 1, 2, 3 Y 4 AÑOS - ENERO A <span class="nameMonthHepatitits"></span></b>
+                        </div>
+                        <div class="border border-primary mb-2 pt-1">
+                            <div class="d-flex mb-1">
+                                <div class="col-md-12">
+                                    <form method="POST" @submit.prevent="PrintExcel" class="form-horizontal">
+                                        {% if request.user.id_red.type == 'R' %}
+                                        <div class="col-sm-4 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="red1" id="red1" aria-label="Default select example">
+                                                <option value="0" selected>Seleccione Red</option>
+                                                <option value="1">DANIEL ALCIDES CARRION</option>
+                                                <option value="2">OXAPAMPA</option>
+                                                <option value="3">PASCO</option>
+                                                <option value="4">TODOS</option>
+                                            </select>
+                                        </div>
+                                        {% else %}
+                                        <div class="col-md-2"></div>
+                                        {% endif %}
+                                        <div class="col-sm-3 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="sector1" id="sector1" aria-label="Default select example">
+                                                <option value="0" selected>Seleccione Sector</option>
+                                                <option value="GOBIERNO REGIONAL">GOBIERNO REGIONAL</option>
+                                                <option value="ESSALUD">ESSALUD</option>
+                                                <option value="TODOS">TODOS</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-3 pt-1 pr-0">
+                                            <select class="form-control-sm w-100" name="mes1" id="mes1" aria-label="Default select example">
+                                                <option value="0" selected>Seleccione Mes</option>
+                                                <option value="1">ENERO</option>
+                                                <option value="2">FEBRERO</option>
+                                                <option value="3">MARZO</option>
+                                                <option value="4">ABRIL</option>
+                                                <option value="5">MAYO</option>
+                                                <option value="6">JUNIO</option>
+                                                <option value="7">JULIO</option>
+                                                <option value="8">AGOSTO</option>
+                                                <option value="9">SETIEMBRE</option>
+                                                <option value="10">OCTUBRE</option>
+                                                <option value="11">NOVIEMBRE</option>
+                                                <option value="12">DICIEMBRE</option>
+                                            </select>
+                                        </div>
+                                        <div class="justify-content-center col-md-2">
+                                            <button class="btn btn-primary btn-sm m-1" id="searchDni" type="submit" onclick="search();"><i class="fa fa-search"></i></button>
+                                            <button type="button" class="btn btn-outline-success m-1 btn-sm"><i class="fa fa-print"></i></button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="col-md-12 text-center p-2">
+                            <h5 class="text-success">1 Año</h5>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right,#1a8e77,#3fb9a1);">
+                                    <h3 class="mt-0">0</h3>
+                                    <p class="m-0 font-15">Meta</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right,#1a8e77,#3fb9a1);">
+                                    <h3 class="mt-0">0</h3>
+                                    <p class="m-0 font-15">Total</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="col-md-12 text-center p-2">
+                            <h5 class="text-warning">2 Años</h5>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(45deg,#F1AB48,#FFD88E);">
+                                    <h3 class="mt-0">0</h3>
+                                    <p class="m-0 font-15">Meta</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(45deg,#F1AB48,#FFD88E);">
+                                    <h3 class="mt-0">0</h3>
+                                    <p class="m-0 font-15">Total</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="col-md-12 text-center p-2">
+                            <h5 class="text-danger">3 Años</h5>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #DA4885, #FF60A2);">
+                                    <h3 class="mt-0">0</h3>
+                                    <p class="m-0 font-15">Meta</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #DA4885, #FF60A2);">
+                                    <h3 class="mt-0">0</h3>
+                                    <p class="m-0 font-15">Total</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="col-md-12 text-center p-2">
+                            <h5 class="text-primary">4 Años</h5>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #4182C7, #63AFFF);">
+                                    <h3 class="mt-0">0</h3>
+                                    <p class="m-0 font-15">Meta</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="x_panel text-white mb-3 pr-2 pl-3" style="background: linear-gradient(to right, #4182C7, #63AFFF);">
+                                    <h3 class="mt-0">0</h3>
+                                    <p class="m-0 font-15">Total</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="x_panel p-2 text-center">
+                            <span class="chart" data-percent="3.8"><span class="percent"></span></span>
+                            <h6 class="text-muted m-0">Avance Infl.</h6>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="x_panel p-2 text-center">
+                            <span class="chart" data-percent="3.8"><span class="percent"></span></span>
+                            <h6 class="text-muted m-0">Avance Infl.</h6>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="x_panel p-2 text-center">
+                            <span class="chart" data-percent="3.8"><span class="percent"></span></span>
+                            <h6 class="text-muted m-0">Avance Infl.</h6>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="x_panel p-2 text-center">
+                            <span class="chart" data-percent="3.8"><span class="percent"></span></span>
+                            <h6 class="text-muted m-0">Avance Infl.</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-6">
+                        <div class="x_panel border border-success">
+                            <h6 class="p-1 mb-2 text-center text-success">Avance Distrital</h6>
+                            <div class="charDist12Hep" style="height: 400px; padding: 0px 15px 10px 10px;"></div>
+                        </div><br>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="x_panel border border-danger">
+                            <h6 class="p-1 mb-2 text-center text-danger">Avance Distrital</h6>
+                            <div class="charDist34Hep" style="height: 400px; padding: 0px 15px 10px 10px;"></div>
+                        </div><br>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev" style="align-items: start; width: 3%;">
+            <span class="glyphicon glyphicon-circle-arrow-left font-35 text-dark"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next" style="align-items: start; width: 3%;">
+            <span class="glyphicon glyphicon-circle-arrow-right font-35 text-dark"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+
+<script src="{% static 'js/vue/coverage.js' %}"></script>
+
+{% endblock scripts %}
